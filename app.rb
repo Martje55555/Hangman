@@ -15,8 +15,6 @@ class HangpersonApp < Sinatra::Base
     session[:game] = @game
   end
   
-  # These two routes are good examples of Sinatra syntax
-  # to help you with the rest of the assignment
   get '/' do
     redirect '/new'
   end
@@ -26,41 +24,76 @@ class HangpersonApp < Sinatra::Base
   end
   
   post '/create' do
-    # NOTE: don't change next line - it's needed by autograder!
     word = params[:word] || HangpersonGame.get_random_word
-    # NOTE: don't change previous line - it's needed by autograder!
-
     @game = HangpersonGame.new(word)
     redirect '/show'
   end
   
-  # Use existing methods in HangpersonGame to process a guess.
-  # If a guess is repeated, set flash[:message] to "You have already used that letter."
-  # If a guess is invalid, set flash[:message] to "Invalid guess."
   post '/guess' do
-    letter = params[:guess].to_s[0]
-    ### YOUR CODE HERE ###
-    redirect '/show'
+        letter = params[:guess].to_s[0]
+      begin
+        valid = @game.guess(letter) 
+       rescue ArgumentError
+           flash[:message] = "Invalid Guess."
+       else
+           if valid == false
+               flash[:message] = "You have already used that letter."
+           end
+      end
+        redirect '/show'
   end
   
-  # Everytime a guess is made, we should eventually end up at this route.
-  # Use existing methods in HangpersonGame to check if player has
-  # won, lost, or neither, and take the appropriate action.
-  # Notice that the show.erb template expects to use the instance variables
-  # wrong_guesses and word_with_guesses from @game.
   get '/show' do
-    ### YOUR CODE HERE ###
-    erb :show # You may change/remove this line
+      redirect '/win' if @game.check_win_or_lose() == :win
+      redirect '/lose' if @game.check_win_or_lose() == :lose
+      redirect '/6MoreTries' if @game.check_win_or_lose() == :play && @game.wrong_guesses_length() == 1
+      redirect '/5MoreTries' if @game.check_win_or_lose() == :play && @game.wrong_guesses_length() == 2
+      redirect '/4MoreTries' if @game.check_win_or_lose() == :play && @game.wrong_guesses_length() == 3
+      redirect '/3MoreTries' if @game.check_win_or_lose() == :play && @game.wrong_guesses_length() == 4
+      redirect '/2MoreTries' if @game.check_win_or_lose() == :play && @game.wrong_guesses_length() == 5
+      redirect '/1MoreTry' if @game.check_win_or_lose() == :play && @game.wrong_guesses_length() == 6
+
+      erb :show if @game.check_win_or_lose() == :play && @game.wrong_guesses_length() == 0
   end
   
   get '/win' do
-    ### YOUR CODE HERE ###
-    erb :win # You may change/remove this line
+    redirect '/show' if @game.check_win_or_lose() == :play
+    erb :YouWON
   end
   
   get '/lose' do
-    ### YOUR CODE HERE ###
-    erb :lose # You may change/remove this line
+    redirect '/show' if @game.check_win_or_lose() == :play
+    erb :YouLOST
   end
-  
+    
+  get '/6MoreTries' do
+    redirect '/show' if @game.wrong_guesses_length() != 1
+    erb :SixMoreTries
+  end
+    
+  get '/5MoreTries' do
+    redirect '/show' if @game.wrong_guesses_length() != 2
+    erb :FiveMoreTries
+  end
+    
+   get '/4MoreTries' do
+    redirect '/show' if @game.wrong_guesses_length() != 3
+    erb :FourMoreTries
+  end
+    
+  get '/3MoreTries' do
+    redirect '/show' if @game.wrong_guesses_length() != 4
+    erb :ThreeMoreTries
+  end
+    
+  get '/2MoreTries' do
+    redirect '/show' if @game.wrong_guesses_length() != 5
+    erb :TwoMoreTries
+  end
+    
+  get '/1MoreTry' do
+    redirect '/show' if @game.wrong_guesses_length() != 6
+    erb :OneMoreTry
+  end
+
 end
