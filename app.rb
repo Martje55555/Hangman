@@ -53,7 +53,7 @@ class HangpersonApp < Sinatra::Base
       redirect '/2MoreTries' if @game.check_win_or_lose() == :play && @game.wrong_guesses_length() == 5
       redirect '/1MoreTry' if @game.check_win_or_lose() == :play && @game.wrong_guesses_length() == 6
 
-      erb :show if @game.check_win_or_lose() == :play && @game.wrong_guesses_length() == 0
+      erb :show #if @game.check_win_or_lose() == :play && @game.wrong_guesses_length() == 0
   end
   
   get '/win' do
