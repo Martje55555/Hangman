@@ -14,6 +14,10 @@ class HangpersonGame
       @wrong_guesses
   end
 
+  def wrong_guesses_length()
+      @wrong_guesses.length
+  end
+
   def guesses()
       @guesses
   end
