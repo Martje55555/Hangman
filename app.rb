@@ -16,9 +16,13 @@ class HangpersonApp < Sinatra::Base
   end
   
   get '/' do
-    redirect '/new'
+    redirect '/home'
   end
   
+  get '/home' do
+    erb :home
+  end
+
   get '/new' do
     erb :new
   end
